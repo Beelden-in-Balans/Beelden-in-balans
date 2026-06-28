@@ -7,8 +7,8 @@
     <style>
         /* RUSTIG EN ROND ONTWERP */
         :root {
-            --bg-color: #f9f6f0; /* Zacht beige */
-            --text-color: #5a5a5a; /* Zacht grijs */
+            --bg-color: #f9f6f0;
+            --text-color: #5a5a5a;
             --accent-color: #d1c7bd;
             --white: #ffffff;
         }
@@ -37,7 +37,6 @@
             object-fit: cover;
             border: 4px solid var(--white);
             box-shadow: 0 4px 15px rgba(0,0,0,0.05);
-            /* ZET HIER DE FOTO VAN JE MOEDER: */
             background-image: url('moeder.jpg'); 
             background-size: cover;
             background-position: center;
@@ -54,7 +53,6 @@
             line-height: 1.6;
         }
 
-        /* GALERIJ */
         .gallery {
             display: grid;
             grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
@@ -73,9 +71,7 @@
             transition: transform 0.3s ease;
         }
 
-        .card:hover {
-            transform: translateY(-5px);
-        }
+        .card:hover { transform: translateY(-5px); }
 
         .card img {
             width: 100%;
@@ -83,23 +79,10 @@
             object-fit: cover;
         }
 
-        .card-content {
-            padding: 15px;
-        }
+        .card-content { padding: 15px; }
+        .card h3 { margin: 0 0 10px; font-size: 1.2em; font-weight: 500; }
+        .card p { margin: 0; font-size: 0.9em; color: #888; }
 
-        .card h3 {
-            margin: 0 0 10px;
-            font-size: 1.2em;
-            font-weight: 500;
-        }
-
-        .card p {
-            margin: 0;
-            font-size: 0.9em;
-            color: #888;
-        }
-
-        /* POP-UP (MODAL) */
         .modal {
             display: none;
             position: fixed;
@@ -157,28 +140,19 @@
         .nav-btn:hover { background: var(--white); }
         .prev-btn { left: 10px; }
         .next-btn { right: 10px; }
-
-        .modal-desc {
-            margin-top: 15px;
-            font-size: 1em;
-            line-height: 1.5;
-        }
+        .modal-desc { margin-top: 15px; font-size: 1em; line-height: 1.5; }
     </style>
 </head>
 <body>
 
     <header>
-        <!-- Verander 'moeder.jpg' in de CSS hierboven naar de bestandsnaam van de foto van je moeder -->
         <div class="profile-pic"></div>
         <h1>Beelden van mijn Moeder</h1>
         <p class="description">Welkom op mijn pagina. Hier deel ik mijn passie voor het maken van beelden. Klik op een beeld om meer foto's en details te zien.</p>
     </header>
 
-    <div class="gallery" id="gallery">
-        <!-- Beelden worden hier automatisch geladen via het script -->
-    </div>
+    <div class="gallery" id="gallery"></div>
 
-    <!-- Pop-up venster -->
     <div class="modal" id="modal">
         <div class="modal-content">
             <span class="close-btn" onclick="closeModal()">&times;</span>
@@ -194,23 +168,23 @@
 
     <script>
         // ==========================================
-        // DE DATABASE: HIER KAN JE MOEDER BEELDEN TOEVOEGEN
-        // Voeg simpelweg een nieuw blokje toe tussen { en }
+        // DATABASE MET MAPJES STRUCTUUR
         // ==========================================
         const beeldenData = [
             {
                 titel: "Liefde in Steen",
+                map: "beelden/liefde-in-steen/", // <-- Geef hier de naam van de map op
                 korte_beschrijving: "Een abstract beeld gemaakt van speksteen.",
-                beschrijving: "Dit beeld is gemaakt in 2025. Het representeert de zachte vormen van de natuur. De steen was erg hard maar gaf een prachtige glans na het polijsten.",
-                fotos: ["foto1a.jpg", "foto1b.jpg", "foto1c.jpg"] // Zet hier de namen van de foto's
+                beschrijving: "Dit beeld is gemaakt in 2025. Het representeert de zachte vormen van de natuur.",
+                fotos: ["foto1.jpg", "foto2.jpg", "foto3.jpg"] 
             },
             {
                 titel: "Vogel in Vlucht",
+                map: "beelden/vogel-in-vlucht/", // <-- Map voor het tweede beeld
                 korte_beschrijving: "Bronzen sculptuur op houten sokkel.",
                 beschrijving: "Een dynamisch beeld dat het moment van opstijgen vastlegt.",
-                fotos: ["foto2a.jpg", "foto2b.jpg"]
+                fotos: ["vogel1.jpg", "vogel2.jpg"]
             }
-            // Kopieer het blokje hierboven om een nieuw beeld toe te voegen
         ];
         // ==========================================
 
@@ -218,13 +192,12 @@
         let currentItem = null;
         let currentPhotoIndex = 0;
 
-        // Bouw de galerij op de homepagina
         beeldenData.forEach((beeld, index) => {
             const card = document.createElement('div');
             card.className = 'card';
-            // Laat de eerste foto uit de lijst zien op de homepagina
+            // Code gebruikt nu het mapje + de fotonaam
             card.innerHTML = `
-                <img src="${beeld.fotos[0]}" alt="${beeld.titel}" onerror="this.src='https://via.placeholder.com/400x300?text=Geen+Foto'">
+                <img src="${beeld.map}${beeld.fotos[0]}" alt="${beeld.titel}" onerror="this.src='https://via.placeholder.com/400x300?text=Geen+Foto'">
                 <div class="card-content">
                     <h3>${beeld.titel}</h3>
                     <p>${beeld.korte_beschrijving}</p>
@@ -256,12 +229,11 @@
 
         function updateModalImage() {
             const imgEl = document.getElementById('modal-img');
-            imgEl.src = currentItem.fotos[currentPhotoIndex];
-            // Fallback als foto nog niet is geüpload
+            // Combineer de map en de fotonaam voor de pop-up
+            imgEl.src = currentItem.map + currentItem.fotos[currentPhotoIndex];
             imgEl.onerror = () => imgEl.src = 'https://via.placeholder.com/600x400?text=Foto+niet+gevonden';
         }
 
-        // Sluit pop-up als je ernaast klikt
         window.onclick = function(event) {
             if (event.target == document.getElementById('modal')) {
                 closeModal();
